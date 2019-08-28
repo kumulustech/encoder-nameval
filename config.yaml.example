@@ -1,0 +1,36 @@
+ec2win:            # this matches the driver name, e.g., dotnet, iis, etc. (what should it be)
+  web:             # this is the name of the VM's role: web, app, etc.; we may have multiple although we need only one now
+    driver_config_setting1: xxx
+    driver_config_setting2: yyy
+    encoder:
+      name: name_val
+      settings:
+        BoolStringSettingA: 
+          type: enum
+          defautl: 'True'
+          values:
+          - 'True'
+          - 'False'
+          unit: 'bool-str'
+        BoolNumSettingB:
+          type: range
+          min: 0
+          max: 1
+          step: 1
+          default: 0
+          unit: 'bool-int'
+        EnumSettingC: 
+          values:
+          - 'val1'
+          - 'val2'
+          - 'val3'
+          default: 'val1'
+          unit: 'val enum'
+        RangeSettingD:
+          type: range
+          min: 1
+          max: 1024
+          step: 1
+          unit: 'MB'
+          default: 512
+
