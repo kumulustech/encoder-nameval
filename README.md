@@ -10,20 +10,22 @@ Further packaging steps can be found in the repo `opsani/servo`.
 The available settings within this encoder are derived from the encoder's config section of config.yaml (see config.yaml.example)
 
 Each setting contains a `type` property which determines its behaviour as well as the acceptable values from config.
-More specifically, the value of type is used to dynamically instantiate a setting class definition corresponding to the name of the type
-then perform validation as well as conversion of values to and from the strings of adjust output 
+More specifically, the value of type (and certain config properties) is used to dynamically instantiate a setting class definition
+corresponding to the name of the type then perform validation as well as conversion of values to and from the strings of adjust output 
+
+Additionally, the `default` property is required for all settings to be returned when there is no data to be decoded
 
 The following types of settings are available to define:
+
 - `range`: Numeric value, requires additional properties:
-    - `min`: Minumum value
-    - `max`: Maximum value
-    - `step`: Minimum unit of change
+  - `min`: Minumum value
+  - `max`: Maximum value
+  - `step`: Minimum unit of change
+  - `value_type`: type of encoded value: int(default), float, or bool
 - `enum`
-    - `values`: List of acceptable values for this 
+  - `values`: List of acceptable values for this setting
 
 The required properties for each setting type/class is validated by it's respective check_config method
-
-The `default` property is required for all settings in use cases where the describe output is not available prior to first adjustment
 
 The `unit` property may also be included. Initially it will only inform the describe output, but subclasses of the generic setting
 types can be defined to add more nuanced behaviour (eg. a setting type that converts gigabytes represented by a decimal number to an integer number of megabytes)
