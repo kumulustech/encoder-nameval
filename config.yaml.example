@@ -11,7 +11,7 @@ ec2win:            # this matches the driver name, e.g., dotnet, iis, etc. (what
           max: 1
           step: 1
           default: 1
-          target_type: str
+          target_type: bool # Values are encoded to "True" or "False"
           unit: 'bool-str'
         BoolNumSettingB:
           type: range
@@ -28,11 +28,19 @@ ec2win:            # this matches the driver name, e.g., dotnet, iis, etc. (what
           - 'val3'
           default: 'val1'
           unit: 'val enum'
-        RangeSettingD:
+        RangeIntSettingD:
           type: range
           min: 1
           max: 1024
           step: 1
           unit: 'MB'
           default: 512
+        RangeFloatSettingD:
+          type: range
+          min: 0.0
+          max: 1.0
+          step: 0.05
+          target_type: float
+          unit: 'some decimal'
+          default: 0.5
 

@@ -1,4 +1,5 @@
 BoolStringSettingA=True
 BoolNumSettingB=0
 EnumSettingC=val1
-RangeSettingD=512
+RangeIntSettingD=512
+RangeFloatSettingE=0.5
