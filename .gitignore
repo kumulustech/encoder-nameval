@@ -1,2 +1,4 @@
 encoders/base.py
 .vscode/settings.json
+config.yaml
+*__pycache__*

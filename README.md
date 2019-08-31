@@ -21,7 +21,7 @@ The following types of settings are available to define:
   - `min`: Minumum value
   - `max`: Maximum value
   - `step`: Minimum unit of change
-  - `value_type`: type of encoded value: int(default), float, or bool
+  - `value_type`: type of encoded value: int(default) or bool
 - `enum`
   - `values`: List of acceptable values for this setting
 
