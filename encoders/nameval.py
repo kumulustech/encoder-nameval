@@ -1,4 +1,5 @@
 import json
+from numbers import Number
 
 from encoders.base import Encoder as BaseEncoder, RangeSetting as BaseRangeSetting, \
     Setting as BaseSetting, \
@@ -16,6 +17,16 @@ class IntToStrValueEncoder:
     def decode(data):
         return int(data)
 
+class FloatToStrValueEncoder:
+
+    @staticmethod
+    def encode(value):
+        return str(float(value))
+
+    @staticmethod
+    def decode(data):
+        return float(data)
+
 
 class BoolToStrValueEncoder:
 
@@ -30,23 +41,28 @@ class BoolToStrValueEncoder:
         return int(data)
 
 class RangeSetting(BaseRangeSetting):
+    value_encoder = None
+    scale = None
+
     def __init__(self, name, config=None):
-        self.allowed_options.update({'value_type', 'type', 'unit'})
+        self.allowed_options.update({'type', 'unit', 'scale'})
         self.name = name
         self.type = config['type']
         super().__init__(config)
 
-        val_type = self.config.get('value_type', 'int')
-        try:
-            encoder_class = globals()['{}ToStrValueEncoder'.format(val_type.title())]
-        except KeyError:
-            raise EncoderConfigException('Setting value_type "{}" is not supported in nameval encoder.'.format(val_type))
-
-        self.value_encoder = encoder_class()
+        if self.value_encoder is None:
+            raise NotImplementedError('You must provide a value encoder for setting {} '
+                                      'handled by class {}'.format(q(self.name), self.__class__.__name__))
         
         if self.default is None:
-            raise NotImplementedError('You must provide a default value for settings {} '
+            raise NotImplementedError('You must provide a default value for setting {} '
                                       'handled by class {}'.format(q(self.name), self.__class__.__name__))
+        
+        self.scale = config.get('scale')
+        if self.scale is not None:
+            if not isinstance(self.scale, Number):
+                raise SettingConfigException('Scale provided for setting {} must be a numeric type. Found: {} "{}"'.format(self.name, self.scale.__class__.__name__, self.scale))
+        
 
     def describe(self):
         retVal = super().describe()
@@ -66,6 +82,8 @@ class RangeSetting(BaseRangeSetting):
 
     def encode_option(self, value):
         value = self.validate_value(value)
+        if self.scale is not None:
+            value = value * self.scale
         encoded_value = self.get_value_encoder().encode(value)
         return self.format_value(encoded_value)
     
@@ -77,7 +95,23 @@ class RangeSetting(BaseRangeSetting):
         value = data.get(self.name)
         if value is None:
             return self.default
-        return self.get_value_encoder().decode(value)
+        decoded_value = self.get_value_encoder().decode(value)
+        if self.scale is not None:
+            return decoded_value / self.scale
+        
+        return decoded_value
+
+class RangeIntSetting(RangeSetting):
+    value_encoder = IntToStrValueEncoder()
+
+class BoolSetting(RangeSetting):
+    value_encoder = BoolToStrValueEncoder()
+    min = 0
+    max = 1
+    step = 1
+
+class RangeFloatSetting(RangeSetting):
+    value_encoder = FloatToStrValueEncoder()
 
 class EnumSetting(BaseSetting):
     def __init__(self, name, config=None):
@@ -140,9 +174,13 @@ class Encoder(BaseEncoder):
         for name, enc_set_config in requested_settings.items():
             set_type = enc_set_config.get('type')
             if set_type is None:
-                raise SettingConfigException('No type provided for setting name {} in nameval encoder')
+                raise SettingConfigException('No type provided for setting name {} in nameval encoder'.format(name))
+            if not isinstance(set_type, str):
+                raise SettingConfigException('Value of type must be a string for setting name {} in nameval encoder. Found: {} "{}"'.format(name, set_type.__class__.__name__, set_type))
+
+            frmt_type = set_type.replace('-', ' ').title().replace(' ', '')
             try:
-                setting_class = globals()['{}Setting'.format(set_type.title())]
+                setting_class = globals()['{}Setting'.format(frmt_type)]
             except KeyError:
                 raise EncoderConfigException('Setting type "{}" is not supported in nameval encoder.'.format(set_type))
             self.settings[name] = setting_class(name, enc_set_config)

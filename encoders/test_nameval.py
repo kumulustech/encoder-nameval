@@ -55,11 +55,12 @@ def write_test_output_file(fname, data):
     f.close()
 
 decode_input = '''\
-BoolStringSettingA=True
-BoolNumSettingB=0
-EnumSettingC=val1
-RangeIntSettingD=512
-RangeFloatSettingE=0.5
+BoolStringSettingA=False
+BoolNumSettingB=1
+EnumSettingC=val3
+RangeIntSettingD=16
+RangeMBSettingE=2560
+RangeFloatSettingF=0.25
 '''
 
 encode_input = {
@@ -69,9 +70,10 @@ encode_input = {
                 "settings": {
                     "BoolStringSettingA": {"value": 0},
                     "BoolNumSettingB": {"value": 1},
-                    "EnumSettingC": {"value": "val1"},
-                    "RangeIntSettingD": {"value": 256},
-                    "RangeFloatSettingE": {"value": 0.75},
+                    "EnumSettingC": {"value": "val2"},
+                    "RangeIntSettingD": {"value": 32},
+                    "RangeMBSettingE": {"value": 1.5},
+                    "RangeFloatSettingF": {"value": 0.75},
                 }
             }
         }
